@@ -10,7 +10,7 @@ from hashlib import sha1
 
 input_db=None
 dest=None
-comp_sha=False
+comp_sha=True
 rotate=False
 
 def show_usage():
@@ -122,9 +122,9 @@ def main():
             print '\nCopied', copy_cnt, 'files. (Ignored', exist_cnt,'files as they already existed)'
 
     #Finally, delete empty dirs to tidy up (caused by old events in DB)
-    for name in os.listdir(sys.argv[1]):
+    for name in os.listdir(dest):
         if os.path.isdir(name) and len(os.listdir(name)) == 0:
-            os.remove(name)
+            os.rmdir(name)
 
 if __name__ == "__main__":
     main()

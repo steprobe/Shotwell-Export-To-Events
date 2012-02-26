@@ -6,4 +6,6 @@ windows machine in my case) that is sorted as EVENT_NAME/photos.
 
 It also rotates them automatically using exiftran.
 
+Example:
+    sw_export_to_event.py -i ~/.shotwell/data/photo.db -d /mnt/windows/Users/stephen/Pictures/ -r
 

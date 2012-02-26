@@ -4,6 +4,7 @@ import shutil
 import sqlite3
 import os
 import sys
+from subprocess import Popen, PIPE
 
 def show_usage():
     print sys.argv[0], "[destination] [location_ofshotwell_db.db]"
@@ -42,6 +43,9 @@ def main():
                 if not os.path.exists(filename):
                     sys.stdout.write('.')
                     sys.stdout.flush()
+    
+                    Popen(("exiftran", "-a", "-i", "-p", photo[0]), stdout=PIPE, stderr=PIPE).communicate()
+
                     shutil.copyfile(photo[0], filename)
                     copy_cnt = copy_cnt + 1
                 else:

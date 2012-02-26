@@ -2,6 +2,8 @@ This probably goes against what shotwell want me to do, but it annoys me I can't
 rearrange my date ordered photos on the filesystem to be by event. Where it annoys 
 me most is when I want to show my photos on the xbox and then have to browse via file
 system. This is a hack that will **COPY** the photos to another directory (on my
-        windows machine in my case) that is sorted as EVENT_NAME/photos
+windows machine in my case) that is sorted as EVENT_NAME/photos.
+
+It also rotates them automatically using exiftran.
 
 

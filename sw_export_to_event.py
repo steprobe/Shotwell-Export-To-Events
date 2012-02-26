@@ -10,6 +10,7 @@ from hashlib import sha1
 
 input_db=None
 dest=None
+comp_sha=False
 rotate=False
 
 def show_usage():
@@ -19,6 +20,7 @@ Usage:''', sys.argv[0], '''
     -d      Destination to copy events (required)
     -r      Rotate source photo's in place. Off by default. Requires 
             exiftran to be installed. Will slow down process.
+    -f      Compare by filename rather than sha1 of header (sha1 is slower + default)
     -h      Show this help
 '''
 
@@ -26,12 +28,13 @@ def parse_args():
     global input_db
     global dest
     global rotate
+    global comp_sha
 
     input_db_set=False
     dest_set=False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:d:rh")
+        opts, args = getopt.getopt(sys.argv[1:], "i:d:rfh")
     except getopt.GetoptError, err:
         show_usage()
         sys.exit(10)
@@ -46,10 +49,13 @@ def parse_args():
         elif o == "-h":
             show_usage()
             exit(0)
+        elif o == "-f":
+            comp_sha = False
         elif o == "-r":
             rotate = True
 
     if not input_db_set or not dest_set:
+        print "Missing options"
         show_usage()
         exit(10)
 
@@ -57,6 +63,8 @@ def shafile(filename):
     try:
         with open(filename, "rb") as f:
             return sha1(f.read()).hexdigest()
+#Could just sha header...
+#return sha1(f.read(512)).hexdigest()
     except IOError:
         return 0
 
@@ -67,6 +75,7 @@ def main():
     print "Going to output to", dest
     print "Going to Read database from", input_db
     print "Rotation of source photos? ", rotate
+    print "Compare files by sha1? ", comp_sha
 
     conn = sqlite3.connect(input_db)
     crs = conn.cursor()
@@ -93,9 +102,13 @@ def main():
 
                 filename = event_dir + os.sep + os.path.basename(photo[0])
 
-                destsha = shafile(filename)
-                sourcesha = shafile(photo[0])
-                if destsha != sourcesha:
+                copy_needed = False
+                if comp_sha:
+                    copy_needed = not os.path.exists(filename) or shafile(filename) != shafile(photo[0])
+                else:
+                    copy_needed = not os.path.exists(filename)
+
+                if copy_needed:
                     sys.stdout.write('.')
                     sys.stdout.flush()
 
